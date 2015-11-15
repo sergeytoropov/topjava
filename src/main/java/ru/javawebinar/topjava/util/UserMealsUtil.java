@@ -3,11 +3,11 @@ package ru.javawebinar.topjava.util;
 import ru.javawebinar.topjava.model.UserMeal;
 import ru.javawebinar.topjava.model.UserMealWithExceed;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * GKislin
@@ -24,12 +24,37 @@ public class UserMealsUtil {
                 new UserMeal(LocalDateTime.of(2015, Month.MAY, 31,20,0), "Ужин", 510)
         );
         getFilteredMealsWithExceeded(mealList, LocalTime.of(7, 0), LocalTime.of(12,0), 2000);
-//        .toLocalDate();
-//        .toLocalTime();
     }
 
     public static List<UserMealWithExceed>  getFilteredMealsWithExceeded(List<UserMeal> mealList, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
-        // TODO return filtered list with correctly exceeded field
-        return null;
+        // Распределение калорий по дням
+        Map<LocalDate, Integer> caloriesDays = new HashMap<LocalDate, Integer>();
+        List<UserMealWithExceed> mealExceedList = new ArrayList<UserMealWithExceed>();
+
+        for (UserMeal meal: mealList) {
+            LocalDate day = meal.getDateTime().toLocalDate();
+
+            if (caloriesDays.containsKey(day)) {
+                caloriesDays.put(day, caloriesDays.get(day) + meal.getCalories());
+            } else {
+                caloriesDays.put(day, meal.getCalories());
+            }
+        }
+
+        for (UserMeal meal: mealList) {
+            if (TimeUtil.isBetween(meal.getDateTime().toLocalTime(), startTime, endTime)) {
+                LocalDate day = meal.getDateTime().toLocalDate();
+                boolean exceed = false;
+
+                if (caloriesDays.containsKey(day)) {
+                    if (caloriesDays.get(day) > caloriesPerDay) {
+                        exceed = true;
+                    }
+                }
+                mealExceedList.add(new UserMealWithExceed(meal.getDateTime(), meal.getDescription(), meal.getCalories(), exceed));
+            }
+        }
+
+        return mealExceedList;
     }
 }
