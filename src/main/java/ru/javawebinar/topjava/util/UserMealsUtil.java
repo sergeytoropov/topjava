@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
 import java.util.*;
+import static java.util.stream.Collectors.*;
 
 /**
  * GKislin
@@ -28,32 +29,26 @@ public class UserMealsUtil {
 
     public static List<UserMealWithExceed>  getFilteredMealsWithExceeded(List<UserMeal> mealList, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
         // Распределение калорий по дням
-        Map<LocalDate, Integer> caloriesDays = new HashMap<LocalDate, Integer>();
-        List<UserMealWithExceed> mealExceedList = new ArrayList<UserMealWithExceed>();
+        Map<LocalDate, Integer> caloriesDays = mealList.stream()
+                .collect(groupingBy(meal -> meal.getDateTime().toLocalDate(), summingInt(meal -> meal.getCalories())));
 
-        for (UserMeal meal: mealList) {
-            LocalDate day = meal.getDateTime().toLocalDate();
+        /*
+        caloriesDays.forEach((key, value) -> {
+                System.out.println("key [" + key + "] value [" + value + "]");
+        });
+        */
 
-            if (caloriesDays.containsKey(day)) {
-                caloriesDays.put(day, caloriesDays.get(day) + meal.getCalories());
-            } else {
-                caloriesDays.put(day, meal.getCalories());
-            }
-        }
+        List<UserMealWithExceed> mealExceedList = mealList.stream()
+                .filter(meal -> TimeUtil.isBetween(meal.getDateTime().toLocalTime(), startTime, endTime))
+                .map(meal -> new UserMealWithExceed(meal.getDateTime(), meal.getDescription(), meal.getCalories(),
+                        (caloriesDays.containsKey(meal.getDateTime().toLocalDate())) ? caloriesDays.get(meal.getDateTime().toLocalDate()) > caloriesPerDay : false))
+                .collect(toList());
 
-        for (UserMeal meal: mealList) {
-            if (TimeUtil.isBetween(meal.getDateTime().toLocalTime(), startTime, endTime)) {
-                LocalDate day = meal.getDateTime().toLocalDate();
-                boolean exceed = false;
-
-                if (caloriesDays.containsKey(day)) {
-                    if (caloriesDays.get(day) > caloriesPerDay) {
-                        exceed = true;
-                    }
-                }
-                mealExceedList.add(new UserMealWithExceed(meal.getDateTime(), meal.getDescription(), meal.getCalories(), exceed));
-            }
-        }
+        /*
+        mealExceedList.forEach(meal -> {
+            System.out.println(meal);
+        });
+        */
 
         return mealExceedList;
     }

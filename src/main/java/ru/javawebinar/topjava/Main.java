@@ -1,8 +1,5 @@
 package ru.javawebinar.topjava;
 
-import java.time.LocalDateTime;
-import java.time.Month;
-
 /**
  * User: gkislin
  * Date: 05.08.2015
