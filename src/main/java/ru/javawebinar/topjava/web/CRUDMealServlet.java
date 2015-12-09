@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class CRUDMealServlet extends HttpServlet {
     private static final LoggerWrapper LOG = LoggerWrapper.get(UserServlet.class);
@@ -26,10 +27,11 @@ public class CRUDMealServlet extends HttpServlet {
             int calories = Integer.valueOf(request.getParameter("inputCalories"));
             int id = Integer.valueOf(request.getParameter("inputMealId"));
 
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
             if (id == -1) {
-               db.create(LocalDateTime.parse(datetime), description, calories);
+               db.create(LocalDateTime.parse(datetime, formatter), description, calories);
             } else {
-               db.update(id, LocalDateTime.parse(datetime), description, calories);
+               db.update(id, LocalDateTime.parse(datetime, formatter), description, calories);
             }
             redirectMealList(response);
             return;
@@ -79,18 +81,13 @@ public class CRUDMealServlet extends HttpServlet {
     }
 
     protected void doInsert(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("headerName", "Добавить еду");
-        request.setAttribute("actionName", "Добавить");
+        request.setAttribute("isAddMeal", true);
         request.setAttribute("mealId", -1);
 
         forward(request, response);
     }
 
     protected void doRead(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("columnNameDate", "Дата");
-        request.setAttribute("columnNameDesc", "Описание");
-        request.setAttribute("columnNameCalories", "Калории");
-
         request.setAttribute("itemList", db.read(2000));
 
         forward("mealList.jsp", request, response);
@@ -99,9 +96,7 @@ public class CRUDMealServlet extends HttpServlet {
     protected void doUpdate(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int id = getId(request);
         if (id != Integer.MIN_VALUE) {
-            request.setAttribute("headerName", "Редактировать еду");
-            request.setAttribute("actionName", "Изменить");
-
+            request.setAttribute("isAddMeal", false);
             request.setAttribute("datetime", request.getParameter("datetime"));
             request.setAttribute("description", request.getParameter("description"));
             request.setAttribute("calories", request.getParameter("calories"));

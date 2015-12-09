@@ -32,9 +32,9 @@
                     <table class="table">
                         <thead>
                             <tr>
-                                <th width="15%">${columnNameDate}</th>
-                                <th width="20%">${columnNameDesc}</th>
-                                <th width="10%">${columnNameCalories}</th>
+                                <th width="15%">Дата</th>
+                                <th width="20%">Описание</th>
+                                <th width="10%">Калории</th>
                                 <th width="10%"></th>
                                 <th width="10%"></th>
                             </tr>
@@ -53,7 +53,7 @@
                                     <td>${item.dateTimeToString()}</td>
                                     <td>${item.description}</td>
                                     <td>${item.calories}</td>
-                                    <td><a class="btn btn-default" href="crud?action=update&id=${item.id}&datetime=${item.dateTime}&description=${item.description}&calories=${item.calories}">редактировать</a></td>
+                                    <td><a class="btn btn-default" href="crud?action=update&id=${item.id}&datetime=${item.dateTimeToString()}&description=${item.description}&calories=${item.calories}">редактировать</a></td>
                                     <td><a class="btn btn-default" href="crud?action=delete&id=${item.id}">удалить</a></td>
                                 </tr>
                             </c:forEach>

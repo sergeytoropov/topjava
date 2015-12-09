@@ -10,15 +10,15 @@ import java.util.*;
 public class DatabaseInMemory implements Database {
     private static DatabaseInMemory ourInstance = new DatabaseInMemory();
     private static Sequence sq = new Sequence();
-    private static List<UserMeal> list = new ArrayList<>();
+    private static Map<Integer, UserMeal> map = new HashMap<>();
 
     static {
-        list.add(new UserMeal(sq.nextValue(), LocalDateTime.of(2015, Month.MAY, 30, 10, 0), "Завтрак", 500));
-        list.add(new UserMeal(sq.nextValue(), LocalDateTime.of(2015, Month.MAY, 30, 13, 0), "Обед", 1000));
-        list.add(new UserMeal(sq.nextValue(), LocalDateTime.of(2015, Month.MAY, 30, 20, 0), "Ужин", 500));
-        list.add(new UserMeal(sq.nextValue(), LocalDateTime.of(2015, Month.MAY, 31, 10, 0), "Завтрак", 1000));
-        list.add(new UserMeal(sq.nextValue(), LocalDateTime.of(2015, Month.MAY, 31, 13, 0), "Обед", 500));
-        list.add(new UserMeal(sq.nextValue(), LocalDateTime.of(2015, Month.MAY, 31, 20, 0), "Ужин", 510));
+        map.put(sq.nextValue(), new UserMeal(sq.value(), LocalDateTime.of(2015, Month.MAY, 30, 10, 0), "Завтрак", 500));
+        map.put(sq.nextValue(), new UserMeal(sq.value(), LocalDateTime.of(2015, Month.MAY, 30, 13, 0), "Обед", 1000));
+        map.put(sq.nextValue(), new UserMeal(sq.value(), LocalDateTime.of(2015, Month.MAY, 30, 20, 0), "Ужин", 500));
+        map.put(sq.nextValue(), new UserMeal(sq.value(), LocalDateTime.of(2015, Month.MAY, 31, 10, 0), "Завтрак", 1000));
+        map.put(sq.nextValue(), new UserMeal(sq.value(), LocalDateTime.of(2015, Month.MAY, 31, 13, 0), "Обед", 500));
+        map.put(sq.nextValue(), new UserMeal(sq.value(), LocalDateTime.of(2015, Month.MAY, 31, 20, 0), "Ужин", 510));
     }
 
     public static DatabaseInMemory getInstance() {
@@ -27,38 +27,28 @@ public class DatabaseInMemory implements Database {
 
     @Override
     public synchronized void create(LocalDateTime dateTime, String description, int calories) {
-        list.add(new UserMeal(sq.nextValue(), dateTime, description, calories));
+        int id = sq.nextValue();
+        map.put(id, new UserMeal(id, dateTime, description, calories));
     }
 
     @Override
     public synchronized List<UserMealWithExceed> read(int calories) {
-        return UserMealsUtil.getFilteredMealsWithExceeded(list, LocalTime.MIN, LocalTime.MAX, calories);
+        return UserMealsUtil.getFilteredMealsWithExceeded(new ArrayList<>(map.values()), LocalTime.MIN, LocalTime.MAX, calories);
     }
 
     @Override
     public synchronized void update(int id, LocalDateTime dateTime, String description, int calories) {
-        for (UserMeal meal: list) {
-            if (meal.getId() == id) {
-                meal.setDateTime(dateTime);
-                meal.setDescription(description);
-                meal.setCalories(calories);
-                break;
-            }
+        UserMeal meal = map.get(id);
+        if (meal != null) {
+            meal.setDateTime(dateTime);
+            meal.setDescription(description);
+            meal.setCalories(calories);
         }
     }
 
     @Override
     public synchronized void delete(int id) {
-        int removeIndex = Integer.MIN_VALUE;
-        for (int index = 0; index < list.size(); index++) {
-            if (list.get(index).getId() == id) {
-                removeIndex = index;
-                break;
-            }
-        }
-        if (removeIndex != Integer.MIN_VALUE) {
-            list.remove(removeIndex);
-        }
+        map.remove(id);
     }
 
     private DatabaseInMemory() {
