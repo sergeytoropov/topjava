@@ -4,8 +4,7 @@ import ru.javawebinar.topjava.model.UserMeal;
 import ru.javawebinar.topjava.repository.UserMealRepository;
 import ru.javawebinar.topjava.util.UserMealsUtil;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -30,18 +29,33 @@ public class InMemoryUserMealRepositoryImpl implements UserMealRepository {
     }
 
     @Override
-    public void delete(int id) {
-        repository.remove(id);
+    public boolean delete(int id, int userId) {
+        return (get(id, userId) == null) ? null : repository.remove(id) != null;
     }
 
     @Override
-    public UserMeal get(int id) {
-        return repository.get(id);
+    public UserMeal get(int id, int userId) {
+        UserMeal userMeal = repository.get(id);
+        if (userMeal != null && userMeal.getUserId() == userId) {
+            return userMeal;
+        }
+        return null;
     }
 
     @Override
-    public Collection<UserMeal> getAll() {
-        return repository.values();
+    public List<UserMeal> getAll(int userId) {
+        //TODO: список еды возвращать отсортированным по времени
+
+        List<UserMeal> list = new ArrayList<>();
+
+        for (Map.Entry<Integer, UserMeal> item: repository.entrySet()) {
+            UserMeal userMeal = item.getValue();
+
+            if (userMeal.getUserId() == userId) {
+               list.add(userMeal);
+            }
+        }
+        return list;
     }
 }
 
