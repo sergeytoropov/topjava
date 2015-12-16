@@ -1,6 +1,7 @@
 package ru.javawebinar.topjava.repository.mock;
 
 import org.junit.Test;
+import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 
 import java.util.ArrayList;
@@ -8,7 +9,7 @@ import java.util.ArrayList;
 import static org.junit.Assert.*;
 
 public class InMemoryUserRepositoryImplTest {
-    private final static UserRepository repository = new InMemoryUserRepositoryImpl();
+    private static UserRepository repository = new InMemoryUserRepositoryImpl();
 
     @Test
     public void testSave() throws Exception {
@@ -36,6 +37,10 @@ public class InMemoryUserRepositoryImplTest {
 
     @Test
     public void testGetAll() throws Exception {
+        repository = new InMemoryUserRepositoryImpl();
+        for (User user: repository.getAll()) {
+            System.out.println(user.getName());
+        }
     }
 }
 

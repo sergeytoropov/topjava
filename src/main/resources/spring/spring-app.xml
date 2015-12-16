@@ -5,13 +5,35 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
     <!--
-        <bean class="ru.javawebinar.topjava.repository.mock.MockUserRepository" id="mockUserRepository"/>
+        <bean class="u.javawebinar.topjava.repository.mock.MockUserRepository" id="mockUserRepository"/>
 
         <bean class="ru.javawebinar.topjava.service.UserServiceImpl">
             <property name="repository" ref="mockUserRepository"/>
         </bean>
     -->
 
+    <!-- Независимые -->
+
+    <bean id="loggedUser" class="ru.javawebinar.topjava.LoggedUser"/>
+
+    <bean id="inMemoryUserRepository" class="ru.javawebinar.topjava.repository.mock.InMemoryUserRepositoryImpl"/>
+
+    <bean id="inMemoryUserMealRepository" class="ru.javawebinar.topjava.repository.mock.InMemoryUserMealRepositoryImpl"/>
+
+    <!-- Зависимые -->
+
+    <bean id="userMealService" class="ru.javawebinar.topjava.service.UserMealServiceImpl">
+        <property name="repository" ref="inMemoryUserMealRepository"/>
+        <property name="loggedUser" ref="loggedUser"/>
+    </bean>
+
+    <bean id="userMealRestController" class="ru.javawebinar.topjava.web.meal.UserMealRestController">
+        <property name="service" ref="userMealService"/>
+    </bean>
+
+    <!-- -->
+
+    <!--
     <context:annotation-config/>
 
     <context:component-scan base-package="ru.javawebinar.**.repository"/>
@@ -19,5 +41,6 @@
     <context:component-scan base-package="ru.javawebinar.**.service"/>
 
     <context:component-scan base-package="ru.javawebinar.**.web"/>
+    -->
 
 </beans>

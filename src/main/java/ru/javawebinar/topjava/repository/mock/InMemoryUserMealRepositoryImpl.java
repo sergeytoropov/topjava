@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class InMemoryUserMealRepositoryImpl implements UserMealRepository {
     private Map<Integer, UserMeal> repository = new ConcurrentHashMap<>();
-    private AtomicInteger counter = new AtomicInteger(0);
+    private AtomicInteger counter = new AtomicInteger(10);
 
     {
         UserMealsUtil.MEAL_LIST.forEach(this::save);
@@ -30,7 +30,10 @@ public class InMemoryUserMealRepositoryImpl implements UserMealRepository {
 
     @Override
     public boolean delete(int id, int userId) {
-        return (get(id, userId) == null) ? null : repository.remove(id) != null;
+        if (get(id, userId) != null) {
+            return repository.remove(id) != null;
+        }
+        return false;
     }
 
     @Override
@@ -44,18 +47,21 @@ public class InMemoryUserMealRepositoryImpl implements UserMealRepository {
 
     @Override
     public List<UserMeal> getAll(int userId) {
-        //TODO: список еды возвращать отсортированным по времени
-
-        List<UserMeal> list = new ArrayList<>();
+        Set<UserMeal> set = new TreeSet<>(new Comparator<UserMeal>() {
+            @Override
+            public int compare(UserMeal a, UserMeal b) {
+                return a.getDateTime().compareTo(b.getDateTime());
+            }
+        });
 
         for (Map.Entry<Integer, UserMeal> item: repository.entrySet()) {
             UserMeal userMeal = item.getValue();
 
             if (userMeal.getUserId() == userId) {
-               list.add(userMeal);
+                set.add(userMeal);
             }
         }
-        return list;
+        return new ArrayList<>(set);
     }
 }
 

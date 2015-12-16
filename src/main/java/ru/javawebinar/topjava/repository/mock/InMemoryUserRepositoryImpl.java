@@ -3,10 +3,9 @@ package ru.javawebinar.topjava.repository.mock;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 import ru.javawebinar.topjava.util.UserMealsUtil;
+import ru.javawebinar.topjava.util.UserUtil;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -15,7 +14,7 @@ public class InMemoryUserRepositoryImpl implements UserRepository {
     private AtomicInteger counter = new AtomicInteger(0);
 
     {
-        UserMealsUtil.USER_LIST.forEach(this::save);
+        UserUtil.getRusUsers().forEach(this::save);
     }
 
     @Override
@@ -50,8 +49,14 @@ public class InMemoryUserRepositoryImpl implements UserRepository {
 
     @Override
     public List<User> getAll() {
-        //TODO: Возвращать список пользователей отсортированных по имени
-
-        return new ArrayList<>(repository.values());
+        class UserComparator implements Comparator<User> {
+            @Override
+            public int compare(User a, User b) {
+                return a.getName().compareTo(b.getName());
+            }
+        }
+        Set<User> set = new TreeSet<>(new UserComparator());
+        set.addAll(repository.values());
+        return new ArrayList<>(set);
     }
 }

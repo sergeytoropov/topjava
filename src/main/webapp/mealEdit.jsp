@@ -25,11 +25,16 @@
 </head>
 <body>
 <section>
-    <h2><a href="">Home</a></h2>
+    <h2><a href="index.html">Home</a></h2>
+    <hr>
+    <h3>${loggedUserName}</h3>
+    <hr>
     <h3>Edit meal</h3>
     <hr>
     <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.UserMeal" scope="request"/>
-    <form method="post" action="meals">
+    <form method="post" action="meals?userId=${userId}" name="editForm">
+        <input type="hidden" name="formName" value="editForm">
+        <input type="hidden" name="userId" value="${userId}">
         <input type="hidden" name="id" value="${meal.id}">
         <dl>
             <dt>DateTime:</dt>
