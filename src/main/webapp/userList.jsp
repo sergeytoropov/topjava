@@ -7,7 +7,7 @@
 <body>
 <h2><a href="index.html">Home</a></h2>
 <h3>Список зарегистрированных пользователей</h3>
-<form action="users" method="post">
+<%--<form action="users" method="post">
     <p>
         <select size="10" multiple name="loggedUserId">
             <option disabled>Выберите пользователя</option>
@@ -20,7 +20,7 @@
             </c:forEach>
         </select>
     </p>
-    <p><input type="submit" value="Войти"></p>
+    <p><input type="submit" value="Войти"></p>--%>
 </form>
 </body>
 </html>

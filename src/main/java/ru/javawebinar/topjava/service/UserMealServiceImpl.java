@@ -48,16 +48,17 @@ public class UserMealServiceImpl implements UserMealService {
 
     @Override
     public void delete(int id) throws NotFoundException {
-        ExceptionUtil.check(repository.delete(id, loggedUser.getId()), "User not a delete id = " + id);
+        ExceptionUtil.check(repository.delete(id, 0), "User not a delete id = " + id);
     }
 
     @Override
     public UserMeal get(int id) throws NotFoundException {
-        return ExceptionUtil.check(repository.get(id, loggedUser.getId()), "User not found id = " + id);
+        return ExceptionUtil.check(repository.get(id, 0), "User not found id = " + id);
     }
 
     private List<UserMeal> internalGetAll() throws NotFoundException {
         int loggedUserId = loggedUser.getId();
+        loggedUserId =0;
         return ExceptionUtil.check(repository.getAll(loggedUserId), "loggedUserId=" + loggedUserId);
     }
 

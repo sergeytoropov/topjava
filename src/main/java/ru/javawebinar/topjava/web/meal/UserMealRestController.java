@@ -2,16 +2,14 @@ package ru.javawebinar.topjava.web.meal;
 
 import ru.javawebinar.topjava.LoggerWrapper;
 import ru.javawebinar.topjava.model.UserMeal;
-import ru.javawebinar.topjava.model.UserMealWithExceed;
 import ru.javawebinar.topjava.service.UserMealServiceImpl;
-import ru.javawebinar.topjava.util.UserMealsUtil;
-import ru.javawebinar.topjava.util.exception.NotFoundException;
+import ru.javawebinar.topjava.util.RequestUtil;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
 /**
  * GKislin
@@ -32,46 +30,63 @@ public class UserMealRestController {
         this.service = service;
     }
 
-    public void save(UserMeal userMeal) {
-        try {
-            service.save(userMeal);
-        } catch (NotFoundException e) {
-            LOG.info("save - " + e);
-        }
+    public void editForm(HttpServletRequest request) {
+        LOG.info("editForm");
+        String id = request.getParameter("id");
+        UserMeal userMeal = new UserMeal(id.isEmpty() ? null : Integer.valueOf(id),
+                LocalDateTime.parse(request.getParameter("dateTime")),
+                request.getParameter("description"),
+                Integer.valueOf(request.getParameter("calories")));
+        LOG.info(userMeal.isNew() ? "Create " : "Update ", userMeal);
+        service.save(userMeal);
     }
 
-    public List<UserMealWithExceed> getAll() {
-        try {
-            return service.getAll();
-        } catch (NotFoundException e) {
-            LOG.info("getAll - " + e);
-        }
-        return new ArrayList<>();
+    public void filterForm(HttpServletRequest request) {
+        LOG.info("filterForm");
+        String strBeginDate = request.getParameter("beginDate");
+        String strEndDate = request.getParameter("endDate");
+        String strBeginTime = request.getParameter("beginTime");
+        String strEndTime = request.getParameter("endTime");
+
+        LocalDate beginDate = RequestUtil.parseDate(LocalDate.MIN, strBeginDate);
+        LocalDate endDate = RequestUtil.parseDate(LocalDate.MAX, strEndDate);
+        LocalTime beginTime = RequestUtil.parseTime(LocalTime.MIN, strBeginTime);
+        LocalTime endTime = RequestUtil.parseTime(LocalTime.MAX, strEndTime);
+
+        request.setAttribute("beginDate", strBeginDate);
+        request.setAttribute("endDate", strEndDate);
+        request.setAttribute("beginTime", strBeginTime);
+        request.setAttribute("endTime", strEndTime);
+
+        LOG.info("filter " + strBeginDate + " - " + strEndDate + " : " + strBeginTime + " - " + strEndTime);
+        request.setAttribute("mealList", service.filter(beginDate, endDate, beginTime, endTime));
     }
 
-    public List<UserMealWithExceed> filter(LocalDate beginDate, LocalDate endDate, LocalTime beginTime, LocalTime endTime) {
-        try {
-            return service.filter(beginDate, endDate, beginTime, endTime);
-        } catch (NotFoundException e) {
-            LOG.info("filter - " + e);
-        }
-        return new ArrayList<>();
+    public void read(HttpServletRequest request) {
+        LOG.info("read");
+        request.setAttribute("mealList", service.getAll());
     }
 
-    public void delete(int id) {
-        try {
-            service.delete(id);
-        } catch (NotFoundException e) {
-            LOG.info("delete - " + e);
-        }
+    public void delete(HttpServletRequest request) {
+        int id = RequestUtil.getId(request);
+        LOG.info("Delete {}", id);
+        service.delete(id);
     }
 
-    public UserMeal get(int id) {
-        try {
-            return service.get(id);
-        } catch (NotFoundException e) {
-            LOG.info("get - " + e);
-        }
-        return new UserMeal(LocalDateTime.now(), "", 0);
+    public void create(HttpServletRequest request) {
+        LOG.info("create");
+        createUpdate(request, new UserMeal(LocalDateTime.now(), "", 1000));
+    }
+
+    public void update(HttpServletRequest request) {
+        int id = RequestUtil.getId(request);
+        LOG.info("update {}" + id);
+        createUpdate(request, service.get(id));
+    }
+
+    private void createUpdate(HttpServletRequest request, UserMeal userMeal) {
+        request.setAttribute("meal", userMeal);
     }
 }
+
+
