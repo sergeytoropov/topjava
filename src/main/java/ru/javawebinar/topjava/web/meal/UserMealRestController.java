@@ -86,6 +86,7 @@ public class UserMealRestController {
 
     private void createUpdate(HttpServletRequest request, UserMeal userMeal) {
         request.setAttribute("meal", userMeal);
+        service.save(userMeal);
     }
 }
 

@@ -12,6 +12,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -67,8 +68,16 @@ public class MealServlet extends HttpServlet {
             }
         }
 
-        protected boolean doAuthentication()  {
-           return true;
+        protected boolean doAuthentication() throws IOException {
+            int seconds = 60;
+            HttpSession session = request.getSession(true);
+            if (session.isNew() || session.getAttribute("loggedUser") == null
+                    || (System.currentTimeMillis() - session.getLastAccessedTime()) > seconds * 1000) {
+                session.invalidate();
+                response.sendRedirect("login");
+                return false;
+            }
+            return true;
         }
     }
 

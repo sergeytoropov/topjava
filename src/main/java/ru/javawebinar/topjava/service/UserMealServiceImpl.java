@@ -42,7 +42,7 @@ public class UserMealServiceImpl implements UserMealService {
 
     @Override
     public UserMeal save(UserMeal user) throws NotFoundException {
-        user.setUserId(loggedUser.getId());
+        user.setUserId(0);
         return ExceptionUtil.check(repository.save(user), "User not a save " + user);
     }
 
