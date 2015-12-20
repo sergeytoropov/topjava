@@ -1,6 +1,8 @@
 package ru.javawebinar.topjava.repository.jdbc;
 
+import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -12,6 +14,7 @@ import ru.javawebinar.topjava.model.UserMeal;
 import ru.javawebinar.topjava.repository.UserMealRepository;
 
 import javax.sql.DataSource;
+import java.beans.PropertyEditorSupport;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,7 +26,39 @@ import java.util.List;
 
 @Repository
 public class JdbcUserMealRepositoryImpl implements UserMealRepository {
-    private static final BeanPropertyRowMapper<UserMeal> ROW_MAPPER = BeanPropertyRowMapper.newInstance(UserMeal.class);
+    public static class LocalDateTimeEditor extends PropertyEditorSupport {
+        @Override
+        public void setAsText(final String text) throws IllegalArgumentException {
+            setValue(LocalDateTime.parse(text));
+            // date time in ISO8601 format
+            // (yyyy-MM-ddTHH:mm:ss.SSSZZ)
+        }
+        @Override
+        public void setValue(final Object value) {
+            super.setValue(value == null || value instanceof LocalDateTime ? value
+                    : LocalDateTime.parse(value.toString()));
+        }
+        @Override
+        public LocalDateTime getValue() {
+            return (LocalDateTime) super.getValue();
+        }
+        @Override
+        public String getAsText() {
+            return getValue().toString();
+            // date time in ISO8601 format
+            // (yyyy-MM-ddTHH:mm:ss.SSSZZ)
+        }
+    }
+
+    public static class LocalDateTimeBeanPropertyRowMapper<T> extends BeanPropertyRowMapper<T> {
+        @Override
+        protected void initBeanWrapper(BeanWrapper bw) {
+            bw.registerCustomEditor(LocalDateTime.class, new LocalDateTimeEditor());
+        }
+    }
+
+    //private static final BeanPropertyRowMapper<UserMeal> ROW_MAPPER = BeanPropertyRowMapper.newInstance(UserMeal.class);
+    private static final LocalDateTimeBeanPropertyRowMapper<UserMeal> ROW_MAPPER = LocalDateTimeBeanPropertyRowMapper.newInstance(UserMeal.class);
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -63,12 +98,13 @@ public class JdbcUserMealRepositoryImpl implements UserMealRepository {
 
     @Override
     public boolean delete(int id, int userId) {
-        return false;
+        return jdbcTemplate.update("DELETE FROM meals WHERE id=? and user_id=?", id, userId) != 0;
     }
 
     @Override
     public UserMeal get(int id, int userId) {
-        return null;
+        List<UserMeal> listUserMeal = jdbcTemplate.query("SELECT * FROM meals WHERE id=? and user_id=?", ROW_MAPPER, id, userId);
+        return DataAccessUtils.singleResult(listUserMeal);
     }
 
     @Override

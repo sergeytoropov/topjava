@@ -30,7 +30,10 @@ public class SpringJDBC {
 
             UserMeal userMeal = new UserMeal(100020, LocalDateTime.now(), "Мой Волшебный слон", 1331);
             jdbc.save(userMeal, 100000);
+            //jdbc.delete(100019, 100000);
 
+            UserMeal um = jdbc.get(100017, 100000);
+            System.out.println(um);
             appCtx.close();
             /*
             AdminRestController adminUserController = appCtx.getBean(AdminRestController.class);
