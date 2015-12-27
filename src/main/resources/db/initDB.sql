@@ -34,3 +34,5 @@ create table meals
   calories    integer,
   foreign key(user_id) references users (id) on delete cascade
 );
+
+

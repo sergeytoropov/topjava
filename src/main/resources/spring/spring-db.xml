@@ -1,9 +1,20 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
-         http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+         http://www.springframework.org/schema/beans
+         http://www.springframework.org/schema/beans/spring-beans.xsd
+         http://www.springframework.org/schema/context
+         http://www.springframework.org/schema/context/spring-context.xsd
+         http://www.springframework.org/schema/util
+         http://www.springframework.org/schema/util/spring-util.xsd
+         http://www.springframework.org/schema/jdbc
+         http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
 
+    <context:annotation-config/>
     <context:property-placeholder location="classpath:db/postgres.properties" system-properties-mode="OVERRIDE"/>
 
     <bean class="ru.javawebinar.topjava.util.DbPopulator">
@@ -19,11 +30,42 @@
         <property name="password" value="${database.password}"/>
     </bean>
 
-    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-        <constructor-arg ref="dataSource"/>
-    </bean>
+    <!--<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">-->
+        <!--<constructor-arg ref="dataSource"/>-->
+    <!--</bean>-->
 
-    <bean id="namedJdbcTemplate" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
-        <constructor-arg ref="dataSource"/>
-    </bean>
+    <!--<bean id="namedJdbcTemplate" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">-->
+        <!--<constructor-arg ref="dataSource"/>-->
+    <!--</bean>-->
+
+        <!-- Hibernate -->
+    <!--<tx:annotation-driven/>-->
+
+    <context:component-scan base-package="ru.javawebinar.**.repository.jpa2"/>
+
+    <!--<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean"-->
+        <bean id="sessionFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
+            p:dataSource-ref="dataSource"
+            p:packagesToScan="ru.javawebinar.topjava.**.model"
+            p:jpaProperties-ref="hibernateProperties">
+
+            <!--<property name="jpaVendorAdapter">-->
+                <!--<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"-->
+                    <!--p:databasePlatform="org.hibernate.dialect.PostgreSQL9Dialect"/>-->
+
+                <!--</bean>-->
+            <!--</property>-->
+        </bean>
+
+
+        <util:properties id="hibernateProperties">
+            <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQL9Dialect</prop>
+            <prop key="hibernate.max fetch depth">З</prop>
+            <prop key="hibernate.jdЬc.fetch_size">50</prop>
+            <prop key="hibernate.jdЬc.batch_size">lO</prop>
+            <prop key="hibernate.show_sql">true</prop>
+        </util:properties>
+
+        <!--<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager"-->
+              <!--p:sessionFactory-ref="sessionFactory"/>-->
 </beans>

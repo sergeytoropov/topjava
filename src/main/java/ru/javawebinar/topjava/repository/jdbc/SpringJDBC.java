@@ -9,11 +9,14 @@ import ru.javawebinar.topjava.to.UserMealWithExceed;
 import ru.javawebinar.topjava.web.meal.UserMealRestController;
 import ru.javawebinar.topjava.web.user.AdminRestController;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -26,14 +29,30 @@ public class SpringJDBC {
             System.out.println(Arrays.toString(appCtx.getBeanDefinitionNames()));
 
             System.out.println("Database");
-            JdbcUserMealRepositoryImpl jdbc = appCtx.getBean(JdbcUserMealRepositoryImpl.class);
+            //JdbcUserMealRepositoryImpl jdbc = appCtx.getBean(JdbcUserMealRepositoryImpl.class);
 
-            UserMeal userMeal = new UserMeal(100020, LocalDateTime.now(), "Мой Волшебный слон", 1331);
-            jdbc.save(userMeal, 100000);
+            //UserMeal userMeal = new UserMeal(100020, LocalDateTime.now(), "Мой Волшебный слон", 1331);
+            //jdbc.save(userMeal, 100000);
             //jdbc.delete(100019, 100000);
+            JdbcUserMealRepositoryImpl jdbc = appCtx.getBean(JdbcUserMealRepositoryImpl.class);
+            for (int i = 0; i < 10000; i++) {
+                UserMeal userMeal = new UserMeal(LocalDateTime.now(), "Обед " + i, 1331);
+                jdbc.save(userMeal, 100000);
+            }
 
-            UserMeal um = jdbc.get(100017, 100000);
+            System.out.println("OUTPUT");
+            UserMeal um = jdbc.get(100010, 100000);
             System.out.println(um);
+
+            System.out.println("GETALL");
+            Collection<UserMeal> coll = jdbc.getAll(100000);
+            coll.stream().forEach(System.out::println);
+
+
+            System.out.println("GETBETWEEN");
+            Collection<UserMeal> coll2 = jdbc.getBetween(
+                    LocalDateTime.parse("2015-12-21T14:00"), LocalDateTime.parse("2015-12-21T23:00"), 100000);
+            coll2.stream().forEach(System.out::println);
             appCtx.close();
             /*
             AdminRestController adminUserController = appCtx.getBean(AdminRestController.class);

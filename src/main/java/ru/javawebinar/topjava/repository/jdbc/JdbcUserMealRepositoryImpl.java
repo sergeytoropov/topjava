@@ -26,6 +26,7 @@ import java.util.List;
 
 @Repository
 public class JdbcUserMealRepositoryImpl implements UserMealRepository {
+    /*
     public static class LocalDateTimeEditor extends PropertyEditorSupport {
         @Override
         public void setAsText(final String text) throws IllegalArgumentException {
@@ -34,17 +35,16 @@ public class JdbcUserMealRepositoryImpl implements UserMealRepository {
             // (yyyy-MM-ddTHH:mm:ss.SSSZZ)
         }
         @Override
-        public void setValue(final Object value) {
-            super.setValue(value == null || value instanceof LocalDateTime ? value
-                    : LocalDateTime.parse(value.toString()));
+        public void setValue(final Object value) throws IllegalArgumentException {
+            super.setValue(value != null && value instanceof Timestamp ? ((Timestamp) value).toLocalDateTime() : value);
         }
         @Override
-        public LocalDateTime getValue() {
-            return (LocalDateTime) super.getValue();
+        public Timestamp getValue() {
+            return Timestamp.valueOf((LocalDateTime) super.getValue());
         }
         @Override
         public String getAsText() {
-            return getValue().toString();
+            return getValue().toLocalDateTime().toString();
             // date time in ISO8601 format
             // (yyyy-MM-ddTHH:mm:ss.SSSZZ)
         }
@@ -56,9 +56,9 @@ public class JdbcUserMealRepositoryImpl implements UserMealRepository {
             bw.registerCustomEditor(LocalDateTime.class, new LocalDateTimeEditor());
         }
     }
+    */
 
-    //private static final BeanPropertyRowMapper<UserMeal> ROW_MAPPER = BeanPropertyRowMapper.newInstance(UserMeal.class);
-    private static final LocalDateTimeBeanPropertyRowMapper<UserMeal> ROW_MAPPER = LocalDateTimeBeanPropertyRowMapper.newInstance(UserMeal.class);
+    private static final BeanPropertyRowMapper<UserMeal> ROW_MAPPER = BeanPropertyRowMapper.newInstance(UserMeal.class);
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -89,9 +89,12 @@ public class JdbcUserMealRepositoryImpl implements UserMealRepository {
             Number newKey = insertUser.executeAndReturnKey(map);
             userMeal.setId(newKey.intValue());
         } else {
-            namedParameterJdbcTemplate.update(
+            int counter = namedParameterJdbcTemplate.update(
                     "UPDATE meals SET datetime=:datetime, description=:description, calories=:calories " +
                             "WHERE id=:id and user_id=:user_id", map);
+            if (counter == 0) {
+                userMeal = null;
+            }
         }
         return userMeal;
     }
@@ -109,11 +112,16 @@ public class JdbcUserMealRepositoryImpl implements UserMealRepository {
 
     @Override
     public List<UserMeal> getAll(int userId) {
-        return null;
+        return jdbcTemplate.query("SELECT * FROM meals WHERE user_id=? ORDER BY datetime DESC", ROW_MAPPER, userId);
     }
 
     @Override
     public List<UserMeal> getBetween(LocalDateTime startDate, LocalDateTime endDate, int userId) {
-        return null;
+        final String select =
+                "select * from meals " +
+                "where datetime::date between ?::date and ?::date and datetime::time between ?::time and ?::time " +
+                "order by datetime desc";
+        return jdbcTemplate.query(select, ROW_MAPPER,
+                Timestamp.valueOf(startDate), Timestamp.valueOf(endDate), Timestamp.valueOf(startDate), Timestamp.valueOf(endDate));
     }
 }

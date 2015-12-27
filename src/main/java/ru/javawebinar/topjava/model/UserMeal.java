@@ -1,19 +1,22 @@
 package ru.javawebinar.topjava.model;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 /**
  * GKislin
  * 11.01.2015.
  */
-public class UserMeal {
-    protected Integer id;
+public class UserMeal extends BaseEntity {
+    //protected Integer userId;
 
-    protected final LocalDateTime dateTime;
+    protected LocalDateTime dateTime;
 
-    protected final String description;
+    protected String description;
 
-    protected final int calories;
+    protected int calories;
+
+    public UserMeal() {}
 
     public UserMeal(LocalDateTime dateTime, String description, int calories) {
         this(null, dateTime, description, calories);
@@ -26,34 +29,50 @@ public class UserMeal {
         this.calories = calories;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    /*
+    public Integer getUserId() {
+        return userId;
     }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+    */
 
     public LocalDateTime getDateTime() {
         return dateTime;
+    }
+
+    /*
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
+    }
+    */
+
+    public void setDateTime(Timestamp dateTime) {
+        this.dateTime = dateTime.toLocalDateTime();
     }
 
     public String getDescription() {
         return description;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public int getCalories() {
         return calories;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public boolean isNew() {
-        return id == null;
+    public void setCalories(int calories) {
+        this.calories = calories;
     }
 
     @Override
     public String toString() {
         return "UserMeal{" +
-                "id=" + id +
+                //"userId=" + userId +
                 ", dateTime=" + dateTime +
                 ", description='" + description + '\'' +
                 ", calories=" + calories +
