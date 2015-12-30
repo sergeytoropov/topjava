@@ -1,26 +1,21 @@
 package ru.javawebinar.topjava.service;
 
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.*;
-import org.junit.runner.Description;
 import org.junit.runner.RunWith;
-import org.junit.runners.model.Statement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import ru.javawebinar.topjava.LoggerWrapper;
 import ru.javawebinar.topjava.MealTestData;
 import ru.javawebinar.topjava.model.UserMeal;
 import ru.javawebinar.topjava.rules.MethodOperatingTime;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.*;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -34,6 +29,7 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @RunWith(SpringJUnit4ClassRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class UserMealServiceTest {
+    private static final LoggerWrapper LOG = LoggerWrapper.get(UserMealServiceTest.class);
 
     @Autowired
     protected UserMealService service;
@@ -42,17 +38,13 @@ public class UserMealServiceTest {
     public TestName testName = new TestName();
 
     @Rule
-    public MethodOperatingTime methodOperatingTime = new MethodOperatingTime(testName);
+    public MethodOperatingTime methodOperatingTime = new MethodOperatingTime(testName, LOG);
 
     //@Rule
     //public TestRule rules = RuleChain.outerRule(testName).around(new MethodOperatingTime(testName));
 
     @Rule
     public ExpectedException expExc = ExpectedException.none();
-
-    private void expExcNotFoundException() {
-        expExc.expect(NotFoundException.class);
-    }
 
     @Test
     public void testDelete() throws Exception {
@@ -62,7 +54,7 @@ public class UserMealServiceTest {
 
     @Test
     public void testDeleteNotFound() throws NotFoundException {
-        expExcNotFoundException();
+        expExc.expect(NotFoundException.class);
         service.delete(MEAL1_ID, 1);
     }
 
@@ -81,7 +73,7 @@ public class UserMealServiceTest {
 
     @Test
     public void testGetNotFound() throws NotFoundException {
-        expExcNotFoundException();
+        expExc.expect(NotFoundException.class);
         service.get(MEAL1_ID, ADMIN_ID);
     }
 
@@ -94,7 +86,7 @@ public class UserMealServiceTest {
 
     @Test
     public void testUpdateNotFound() throws NotFoundException {
-        expExcNotFoundException();
+        expExc.expect(NotFoundException.class);
         UserMeal item = service.get(MEAL1_ID, USER_ID);
         service.update(item, ADMIN_ID);
     }

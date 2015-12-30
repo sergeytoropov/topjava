@@ -31,8 +31,6 @@ public class JpaUserMealRepositoryImpl implements UserMealRepository {
     @PersistenceContext
     private EntityManager em;
 
-    public JpaUserMealRepositoryImpl() {}
-
     private void setUser(UserMeal userMeal, int userId) {
         userMeal.setUser(em.getReference(User.class, userId));
     }
@@ -40,17 +38,74 @@ public class JpaUserMealRepositoryImpl implements UserMealRepository {
     @Override
     @Transactional
     public UserMeal save(UserMeal userMeal, int userId) {
-       if (userMeal.isNew()) {
-            setUser(userMeal, userId);
-            em.persist(userMeal);
-            return userMeal;
-        } else {
-            if (get(userMeal.getId(), userId) != null) {
+        UserMeal answer = null;
+
+        if (userMeal != null) {
+            if (userMeal.isNew()) {
                 setUser(userMeal, userId);
-                return em.merge(userMeal);
+                em.persist(userMeal);
+                answer = userMeal;
+            } else {
+                if (get(userMeal.getId(), userId) != null) {
+                    setUser(userMeal, userId);
+                    answer = em.merge(userMeal);
+                }
             }
         }
-        return null;
+        return answer;
+
+        /*
+        final int EXIT = 0;
+        final int INIT = 1;
+        final int NEW = 2;
+        final int UPDATE = 3;
+        final int ACCESS_DENIED = 4;
+        int state = INIT;
+
+        UserMeal currentUserMeal = null;
+        boolean continued = true;
+        while (continued) {
+            switch (state) {
+                case EXIT:
+                    continued = false;
+                    break;
+
+                case INIT:
+                    state = UPDATE;
+                    if (userMeal == null) {
+                        state = ACCESS_DENIED;
+                    } else if (userMeal.isNew()) {
+                        state = NEW;
+                    }
+                    break;
+
+                case NEW:
+                    state = EXIT;
+
+                    setUser(userMeal, userId);
+                    em.persist(userMeal);
+                    currentUserMeal = userMeal;
+                    break;
+
+                case UPDATE:
+                    state = ACCESS_DENIED;
+                    if (get(userMeal.getId(), userId) != null) {
+                        state = EXIT;
+
+                        setUser(userMeal, userId);
+                        currentUserMeal = em.merge(userMeal);
+                    }
+                    break;
+
+                case ACCESS_DENIED:
+                    state = EXIT;
+
+                    currentUserMeal = null;
+                    break;
+            }
+        }
+        return currentUserMeal;
+        */
     }
 
     @Override
@@ -64,15 +119,14 @@ public class JpaUserMealRepositoryImpl implements UserMealRepository {
 
     @Override
     public UserMeal get(int id, int userId) {
-        UserMeal um = null;
         try {
-            um = em.createNamedQuery(UserMeal.GET, UserMeal.class)
+            return em.createNamedQuery(UserMeal.GET, UserMeal.class)
                     .setParameter("id", id)
                     .setParameter("userId", userId)
                     .getSingleResult();
         } catch (NoResultException nre) {
+            return null;
         }
-        return um;
     }
 
     @Override

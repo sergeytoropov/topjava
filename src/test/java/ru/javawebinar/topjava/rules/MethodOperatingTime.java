@@ -4,6 +4,7 @@ import org.junit.rules.ExternalResource;
 import org.junit.rules.TestName;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
+import ru.javawebinar.topjava.LoggerWrapper;
 
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
@@ -11,9 +12,11 @@ import java.time.temporal.ChronoUnit;
 public class MethodOperatingTime extends ExternalResource {
     private TestName testName;
     private LocalTime start;
+    private LoggerWrapper log;
 
-    public MethodOperatingTime(TestName testName) {
+    public MethodOperatingTime(TestName testName, LoggerWrapper log) {
         this.testName = testName;
+        this.log = log;
     }
 
     @Override
@@ -32,6 +35,6 @@ public class MethodOperatingTime extends ExternalResource {
         super.after();
         LocalTime end = LocalTime.now();
         LocalTime result = end.minus(start.toNanoOfDay(), ChronoUnit.NANOS);
-        System.out.println("Method name is a " + testName.getMethodName() + " worked " + result.getNano() / 1000000 + " ms.");
+        log.info("Method name is a {} worked {} ms.", testName.getMethodName(), result.getNano() / 1000000 );
     }
 }
