@@ -27,15 +27,11 @@ import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
 
-@ContextConfiguration({
-        "classpath:spring/spring-app.xml",
-        "classpath:spring/spring-db.xml"
-})
-@RunWith(SpringJUnit4ClassRunner.class)
-@Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
-@ActiveProfiles(Profiles.POSTGRES)
-public class UserMealServiceTest {
-    private static final LoggerWrapper LOG = LoggerWrapper.get(UserMealServiceTest.class);
+public abstract class UserMealServiceTest extends AbstractSpringTest {
+
+    protected UserMealServiceTest(LoggerWrapper log) {
+        super(log);
+    }
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();

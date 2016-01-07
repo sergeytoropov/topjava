@@ -1,0 +1,13 @@
+package ru.javawebinar.topjava.service.datajpa;
+
+import org.springframework.test.context.ActiveProfiles;
+import ru.javawebinar.topjava.LoggerWrapper;
+import ru.javawebinar.topjava.Profiles;
+import ru.javawebinar.topjava.service.UserMealServiceTest;
+
+@ActiveProfiles({Profiles.POSTGRES, Profiles.DATAJPA})
+public class DataJpaUserMealServiceTest extends UserMealServiceTest {
+    public DataJpaUserMealServiceTest() {
+        super(LoggerWrapper.get(DataJpaUserMealServiceTest.class));
+    }
+}
