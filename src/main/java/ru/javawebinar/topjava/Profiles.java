@@ -10,5 +10,6 @@ public class Profiles {
             POSTGRES = "postgres",
             DATAJPA = "datajpa",
             JDBC = "jdbc",
-            JPA = "jpa";
+            JPA = "jpa",
+            MOCK = "mock";
 }

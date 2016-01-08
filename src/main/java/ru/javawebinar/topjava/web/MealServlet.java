@@ -32,6 +32,14 @@ public class MealServlet extends HttpServlet {
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
 
+        springContext = new ClassPathXmlApplicationContext(new String[] {"spring/spring-app.xml", "spring/spring-db.xml"}, false);
+        String activeProfile = config.getServletContext().getInitParameter("spring.profiles.active");
+        if (activeProfile != null && !"".equals(activeProfile)) {
+            springContext.getEnvironment().setActiveProfiles(activeProfile.trim().split("[,\\s]+"));
+        }
+        springContext.refresh();
+
+        /*
         String[] xmls = new String[] {"spring/spring-app.xml", "spring/spring-db.xml"};
         String activeProfile = config.getServletContext().getInitParameter("spring.profiles.active");
         if (activeProfile == null || "".equals(activeProfile)) {
@@ -41,6 +49,7 @@ public class MealServlet extends HttpServlet {
             springContext.getEnvironment().setActiveProfiles(activeProfile.trim().split("[,\\s]+"));
             springContext.refresh();
         }
+        */
         mealController = springContext.getBean(UserMealRestController.class);
     }
 

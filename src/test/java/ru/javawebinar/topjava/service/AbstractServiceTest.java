@@ -13,10 +13,6 @@ import ru.javawebinar.topjava.LoggerWrapper;
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
-public abstract class AbstractSpringTest {
-    protected final LoggerWrapper LOG;
-
-    protected AbstractSpringTest(LoggerWrapper log) {
-        this.LOG = log;
-    }
+public abstract class AbstractServiceTest {
+    protected final LoggerWrapper LOG = LoggerWrapper.get(getClass());
 }

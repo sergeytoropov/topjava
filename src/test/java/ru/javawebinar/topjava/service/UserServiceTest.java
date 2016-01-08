@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import ru.javawebinar.topjava.LoggerWrapper;
 import ru.javawebinar.topjava.UserTestData.*;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
@@ -16,11 +15,7 @@ import java.util.Collections;
 
 import static ru.javawebinar.topjava.UserTestData.*;
 
-public abstract class UserServiceTest extends AbstractSpringTest {
-
-    protected UserServiceTest(LoggerWrapper log) {
-        super(log);
-    }
+public abstract class UserServiceTest extends AbstractServiceTest {
 
     @Autowired
     protected UserService service;
