@@ -1,4 +1,4 @@
-package ru.javawebinar.topjava;
+package ru.javawebinar.topjava.web;
 
 import ru.javawebinar.topjava.matcher.ModelMatcher;
 import ru.javawebinar.topjava.model.Role;
