@@ -37,6 +37,10 @@ public class UserMealsUtil {
         return getFilteredWithExceeded(mealList, LocalTime.MIN, LocalTime.MAX, caloriesPerDay);
     }
 
+    public static List<UserMealWithExceed> getWithExceeded(Collection<UserMeal> mealList) {
+        return getFilteredWithExceeded(mealList, LocalTime.MIN, LocalTime.MAX, DEFAULT_CALORIES_PER_DAY);
+    }
+
     public static UserMealWithExceed createWithExceed(UserMeal um, boolean exceeded) {
         return new UserMealWithExceed(um.getId(), um.getDateTime(), um.getDescription(), um.getCalories(), exceeded);
     }

@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import static java.time.LocalDateTime.of;
 import static ru.javawebinar.topjava.model.BaseEntity.START_SEQ;
@@ -40,5 +41,9 @@ public class MealTestData {
 
     public static UserMeal getUpdated() {
         return new UserMeal(MEAL1_ID, MEAL1.getDateTime(), "Обновленный завтрак", 200);
+    }
+
+    public static UserMeal duplicate(UserMeal userMeal) {
+        return new UserMeal(userMeal.getId(), userMeal.getDateTime(), userMeal.getDescription(), userMeal.getCalories());
     }
 }

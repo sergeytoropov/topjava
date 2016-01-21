@@ -11,8 +11,8 @@ import java.time.Month;
 import java.util.Arrays;
 
 import static ru.javawebinar.topjava.MealTestData.*;
-import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
-import static ru.javawebinar.topjava.UserTestData.USER_ID;
+import static ru.javawebinar.topjava.web.UserTestData.ADMIN_ID;
+import static ru.javawebinar.topjava.web.UserTestData.USER_ID;
 
 abstract public class AbstractUserMealServiceTest extends AbstractServiceTest {
 
