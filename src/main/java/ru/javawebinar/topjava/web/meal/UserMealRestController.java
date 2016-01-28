@@ -58,4 +58,10 @@ public class UserMealRestController extends AbstractUserMealController {
     public void actionDeleteId(@PathVariable("id") int id) {
         super.delete(id);
     }
+
+    // Date {YYYYMMDD} {20160101}, Time {HHMI} {0101}
+    @RequestMapping(value = "filter/{startDate}/{endDate}/{startTime}/{endTime}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<UserMealWithExceed> actionReadId(@PathVariable("startDate") String startDate, @PathVariable("endDate") String endDate, @PathVariable("startTime") String startTime, @PathVariable("endTime") String endTime) {
+       return null;
+    }
 }
