@@ -8,8 +8,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.javawebinar.topjava.model.UserMeal;
 import ru.javawebinar.topjava.to.UserMealWithExceed;
+import ru.javawebinar.topjava.util.TimeUtil;
 
 import java.net.URI;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 /**
@@ -59,9 +62,13 @@ public class UserMealRestController extends AbstractUserMealController {
         super.delete(id);
     }
 
-    // Date {YYYYMMDD} {20160101}, Time {HHMI} {0101}
+    // Date {YYYY-MM-DD} {2016-01-01}, Time {HH:MI} {01:01}
     @RequestMapping(value = "filter/{startDate}/{endDate}/{startTime}/{endTime}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<UserMealWithExceed> actionReadId(@PathVariable("startDate") String startDate, @PathVariable("endDate") String endDate, @PathVariable("startTime") String startTime, @PathVariable("endTime") String endTime) {
-       return null;
+    public List<UserMealWithExceed> filter(@PathVariable("startDate") String startDate, @PathVariable("endDate") String endDate, @PathVariable("startTime") String startTime, @PathVariable("endTime") String endTime) {
+        LocalDate startDate2 = TimeUtil.parseLocalDate(startDate, TimeUtil.MIN_DATE);
+        LocalDate endDate2 = TimeUtil.parseLocalDate(endDate, TimeUtil.MAX_DATE);
+        LocalTime startTime2 = TimeUtil.parseLocalTime(startTime, LocalTime.MIN);
+        LocalTime endTime2 = TimeUtil.parseLocalTime(endTime, LocalTime.MAX);
+        return super.getBetween(startDate2, startTime2, endDate2, endTime2);
     }
 }
