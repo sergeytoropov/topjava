@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
+<fmt:setBundle basename="messages.app"/>
 <html>
 <jsp:include page="fragments/headTag.jsp"/>
 <link rel="stylesheet" href="webjars/datatables/1.10.9/css/jquery.dataTables.min.css">
@@ -32,17 +33,17 @@
                     </thead>
                     <c:forEach items="${userList}" var="user">
                         <jsp:useBean id="user" scope="page" type="ru.javawebinar.topjava.model.User"/>
-                        <tr>
+                        <tr id="${user.id}">
                             <td><c:out value="${user.name}"/></td>
                             <td><a href="mailto:${user.email}">${user.email}</a></td>
                             <td>${user.roles}</td>
                             <td>
-                                <input type="checkbox"
-                                       <c:if test="${user.enabled}">checked</c:if> id="${user.id}"/>
+                                <input type="checkbox" onclick="enabledUser(this);"
+                                       <c:if test="${user.enabled}">checked</c:if>/>
                             </td>
                             <td><fmt:formatDate value="${user.registered}" pattern="dd-MMMM-yyyy"/></td>
-                            <td><a class="btn btn-xs btn-primary edit" id="${user.id}">Edit</a></td>
-                            <td><a class="btn btn-xs btn-danger delete" id="${user.id}">Delete</a></td>
+                            <td><a class="btn btn-xs btn-primary edit">Edit</a></td>
+                            <td><a class="btn btn-xs btn-danger delete">Delete</a></td>
                         </tr>
                     </c:forEach>
                 </table>
@@ -112,7 +113,6 @@
 
     //            $(document).ready(function () {
     $(function () {
-        oTable_datatable = $('#datatable');
         oTable_datatable_params = {
             "bPaginate": false,
             "bInfo": false,
@@ -149,8 +149,16 @@
             ]
         };
 
-        oTable_datatable.dataTable(oTable_datatable_params);
+        oTable_datatable = $('#datatable').DataTable(oTable_datatable_params);
         makeEditable();
     });
+
+    function enabledUser(elem) {
+        var id = $(elem).parent().parent().attr("id");
+        var checked = $(elem).is(":checked");
+
+        $.get(ajaxUrl + "/account?id=" + id + '&enabled=' + checked, function () {
+        });
+    }
 </script>
 </html>
