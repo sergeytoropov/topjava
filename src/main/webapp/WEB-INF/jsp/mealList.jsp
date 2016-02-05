@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<fmt:setBundle basename="messages.app"/>
+<%--<fmt:setBundle basename="messages.app"/>--%>
 <html>
 <jsp:include page="fragments/headTag.jsp"/>
 <link rel="stylesheet" href="webjars/datatables/1.10.9/css/jquery.dataTables.min.css">
@@ -176,8 +176,6 @@
             ]
         };
 
-        //oTable_datatable.dataTable(oTable_datatable_params);
-        //oTable_datatablev.dataTable(oTable_datatable_params);
         oTable_datatable = $('#datatable').DataTable(oTable_datatable_params);
         makeEditable();
     });
