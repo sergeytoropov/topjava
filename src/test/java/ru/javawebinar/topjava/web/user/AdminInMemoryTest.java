@@ -1,4 +1,4 @@
-package ru.javawebinar.topjava.web;
+package ru.javawebinar.topjava.web.user;
 
 import org.junit.*;
 import org.springframework.context.ConfigurableApplicationContext;
