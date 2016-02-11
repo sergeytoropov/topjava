@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class UserMealTo implements Serializable {
     protected Integer id;
 
-    //@NotEmpty
+    @NotNull
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     protected LocalDateTime dateTime;
 
